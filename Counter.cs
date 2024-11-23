@@ -17,7 +17,6 @@ public class Counter : MonoBehaviour
         {
             if(_isOnTimer == false || _coroutine == null)
             {
-
                 _coroutine = StartCoroutine(Countdown(0.5f));
                 _isOnTimer = true;
             }
