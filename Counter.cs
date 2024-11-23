@@ -8,7 +8,7 @@ public class Counter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
 
     private Coroutine _coroutine;
-    private CounterViewer _counterViewer;
+    CounterViewer _counterViewer;
     private bool _isOnTimer = false;
     private int _counter = 0;
 
@@ -18,7 +18,6 @@ public class Counter : MonoBehaviour
         {
             if(_isOnTimer == false || _coroutine == null)
             {
-
                 _coroutine = StartCoroutine(Countdown(0.5f));
                 _isOnTimer = true;
             }
@@ -33,6 +32,7 @@ public class Counter : MonoBehaviour
     public IEnumerator Countdown(float delay)
     {
         var wait = new WaitForSeconds(delay);
+        _counterViewer = GetComponent<CounterViewer>();
 
         while (true)
         {
