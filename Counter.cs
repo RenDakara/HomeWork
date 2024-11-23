@@ -3,36 +3,37 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class homework : MonoBehaviour
+public class Counter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
 
     private Coroutine _coroutine;
-    private bool _onTimer = false;
+    private bool _isOnTimer = false;
     private int _counter = 0;
 
     private void Update()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            if(_onTimer == false || _coroutine == null)
+            if(_isOnTimer == false || _coroutine == null)
             {
+
                 _coroutine = StartCoroutine(Countdown(0.5f));
-                _onTimer = true;
+                _isOnTimer = true;
             }
             else
             {
                 StopCoroutine(_coroutine);
-                _onTimer = false;
+                _isOnTimer = false;
             }
         }
     }
 
-    private IEnumerator Countdown(float delay, int start = 10)
+    public IEnumerator Countdown(float delay)
     {
         var wait = new WaitForSeconds(delay);
 
-        while(true)
+        while (true)
         {
             _counter++;
             DisplayCountdown(_counter);
@@ -40,7 +41,7 @@ public class homework : MonoBehaviour
         }
     }
 
-    private void DisplayCountdown(int count)
+    public void DisplayCountdown(int count)
     {
         _text.text = count.ToString("");
     }
