@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,9 +9,9 @@ public class Counter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
 
     private Coroutine _coroutine;
-    CounterViewer _counterViewer;
     private bool _isOnTimer = false;
     private int _counter = 0;
+    public event Action<int> CounterView;
 
     private void Update()
     {
@@ -19,7 +20,7 @@ public class Counter : MonoBehaviour
             if(_isOnTimer == false || _coroutine == null)
             {
                 _coroutine = StartCoroutine(Countdown(0.5f));
-                _isOnTimer = true;
+                _isOnTimer = true;                
             }
             else
             {
@@ -32,12 +33,11 @@ public class Counter : MonoBehaviour
     public IEnumerator Countdown(float delay)
     {
         var wait = new WaitForSeconds(delay);
-        _counterViewer = GetComponent<CounterViewer>();
 
         while (true)
         {
             _counter++;
-            _counterViewer.DisplayCountdown(_counter);
+            CounterView?.Invoke(_counter);
             yield return wait;
         }
     }
