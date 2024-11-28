@@ -6,6 +6,17 @@ using UnityEngine;
 public class CounterViewer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
+    [SerializeField] private Counter _counter;
+
+    private void OnEnable()
+    {
+        _counter.CounterView += DisplayCountdown;
+    }
+
+    private void OnDisable()
+    {
+        _counter.CounterView -= DisplayCountdown;
+    }
 
     public void DisplayCountdown(int count)
     {
