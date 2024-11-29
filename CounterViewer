@@ -10,12 +10,12 @@ public class CounterViewer : MonoBehaviour
 
     private void OnEnable()
     {
-        _counter.CounterView += DisplayCountdown;
+        _counter.CounterViewing += DisplayCountdown;
     }
 
     private void OnDisable()
     {
-        _counter.CounterView -= DisplayCountdown;
+        _counter.CounterViewing -= DisplayCountdown;
     }
 
     public void DisplayCountdown(int count)
@@ -23,3 +23,4 @@ public class CounterViewer : MonoBehaviour
         _text.text = count.ToString("");
     }
 }
+
