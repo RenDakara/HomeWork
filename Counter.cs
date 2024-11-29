@@ -9,23 +9,22 @@ public class Counter : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _text;
 
     private Coroutine _coroutine;
-    private bool _isOnTimer = false;
-    private int _counter = 0;
-    public event Action<int> CounterView;
+    private int _number = 0;
+    private float _interval = 0.5f;
+    public event Action<int> CounterViewing;
 
     private void Update()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            if(_isOnTimer == false || _coroutine == null)
+            if(_coroutine == null)
             {
-                _coroutine = StartCoroutine(Countdown(0.5f));
-                _isOnTimer = true;                
+                _coroutine = StartCoroutine(Countdown(_interval));               
             }
             else
             {
                 StopCoroutine(_coroutine);
-                _isOnTimer = false;
+                _coroutine = null;
             }
         }
     }
@@ -36,8 +35,8 @@ public class Counter : MonoBehaviour
 
         while (true)
         {
-            _counter++;
-            CounterView?.Invoke(_counter);
+            _number++;
+            CounterViewing?.Invoke(_number);
             yield return wait;
         }
     }
