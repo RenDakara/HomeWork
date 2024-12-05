@@ -1,0 +1,38 @@
+using System;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Cubes : MonoBehaviour
+{
+    private Cube _cube;
+
+    private void Awake()
+    {
+        _cube = GetComponent<Cube>();
+    }
+
+    private void OnEnable()
+    {     
+        _cube.CubeSpawned += SpawnCubes;
+    }
+
+    private void OnDisable()
+    {
+        _cube.CubeSpawned -= SpawnCubes;
+    }
+
+    private int GetRandomCubes()
+    {
+        int min = 2;
+        int max = 7;
+        return UnityEngine.Random.Range(min, max);
+    }
+
+    private void SpawnCubes()
+    {
+        for (int i = 0; i < GetRandomCubes(); i++)
+            Instantiate(gameObject, gameObject.transform.localPosition, Quaternion.identity);
+    }
+}
