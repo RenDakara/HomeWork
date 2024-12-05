@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,79 +8,46 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private float _explosionRadius;
-    [SerializeField] private float _explosionForce;
+    private int _successNumber = 10;
+    private float _scaleDivide = 2f;
+    private Renderer _renderer;
+    private bool _isSplit = true;
 
-    static private int successNumber = 10;
-    private float scaleDivide = 2f;
-    private float chanceDivide = 2f;
-    private Renderer renderer;
-    private bool isSplit = true;
+    public event Action CubeSpawned;
+    public event Action Explosion;
 
     private void OnMouseDown()
     {
+        Destroy(gameObject);
+
         if (GetSpawnChance())
         {
-            Destroy(gameObject);
-            ChancesDecrease();
-            SpawnCubes();
+            DecreaseChances();
+            CubeSpawned?.Invoke();
         }
         else
         {
-            Destroy(gameObject);
-            Explode();
+            Explosion?.Invoke();
         }
     }
 
-    private int GetRandomCubes()
+    private void DecreaseChances()
     {
-        int min = 2;
-        int max = 6;
-        int randomCubes = Random.Range(min, max);
-        return randomCubes;
-    }
-
-    private void ChancesDecrease()
-    {
-        gameObject.transform.localScale /= scaleDivide;
-        renderer = GetComponent<Renderer>();
-        renderer.material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-    }
-
-    private void SpawnCubes()
-    {
-        for (int i = 0; i < GetRandomCubes(); i++)
-            Instantiate(gameObject, gameObject.transform.localPosition, Quaternion.identity);
+        gameObject.transform.localScale /= _scaleDivide;
+        _renderer = GetComponent<Renderer>();
+        _renderer.material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
     }
 
     private bool GetSpawnChance()
     {
-        int randomNumber = Random.Range(1, 9);
+        int randomNumber = UnityEngine.Random.Range(1, 9);
 
-        if (successNumber < randomNumber)
+        if (_successNumber < randomNumber)
         {
-            isSplit = false;
+            _isSplit = false;
         }
 
-        successNumber--;
-        return isSplit;
-    }
-
-    private void Explode()
-    {
-        foreach (Rigidbody explodableObjects in GetExplodableObjects())
-            explodableObjects.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
-    }
-
-    private List<Rigidbody> GetExplodableObjects()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _explosionRadius);
-        List<Rigidbody> cubes = new();
-
-        foreach (Collider hit in hits)
-            if (hit.attachedRigidbody != null)
-                cubes.Add(hit.attachedRigidbody);
-
-        return cubes;
+        _successNumber--;
+        return _isSplit;
     }
 }
