@@ -1,53 +1,40 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
-
 
 public class Cube : MonoBehaviour
 {
-    private int _successNumber = 10;
-    private float _scaleDivide = 2f;
-    private Renderer _renderer;
-    private bool _isSplit = true;
-
-    public event Action CubeSpawned;
-    public event Action Explosion;
+    private float _splitChance = 1f; // Начинаем с 100%
+    private float _splitChanceDivider = 2f;
+  
+    public event Action OnClickSpawning;
+    public event Action OnClickExploding;
 
     private void OnMouseDown()
     {
-        Destroy(gameObject);
-
-        if (GetSpawnChance())
+        if (CheckChances())
         {
-            DecreaseChances();
-            CubeSpawned?.Invoke();
+            OnClickSpawning?.Invoke();
         }
         else
         {
-            Explosion?.Invoke();
+            OnClickExploding?.Invoke();
         }
+
+        Destroy(gameObject); 
     }
 
-    private void DecreaseChances()
+    private bool CheckChances()
     {
-        gameObject.transform.localScale /= _scaleDivide;
-        _renderer = GetComponent<Renderer>();
-        _renderer.material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
-    }
+        float checkNumber = UnityEngine.Random.Range(0f, 1f); 
+        bool isSplit = checkNumber < _splitChance;
 
-    private bool GetSpawnChance()
-    {
-        int randomNumber = UnityEngine.Random.Range(1, 9);
-
-        if (_successNumber < randomNumber)
+        if (isSplit)
         {
-            _isSplit = false;
+            _splitChance /= _splitChanceDivider; 
         }
 
-        _successNumber--;
-        return _isSplit;
+        return isSplit;
     }
 }
