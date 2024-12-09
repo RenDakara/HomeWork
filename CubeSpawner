@@ -1,38 +1,35 @@
-using System;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class Cubes : MonoBehaviour
+public class CubeSpawner : MonoBehaviour
 {
-    private Cube _cube;
-
-    private void Awake()
-    {
-        _cube = GetComponent<Cube>();
-    }
+    [SerializeField] private GameObject _cubePrefab; 
 
     private void OnEnable()
-    {     
-        _cube.CubeSpawned += SpawnCubes;
+    {
+        foreach (var cube in FindObjectsOfType<Cube>())
+        {
+            cube.OnClickSpawning += CreateCubes;
+        }
     }
 
     private void OnDisable()
     {
-        _cube.CubeSpawned -= SpawnCubes;
+        foreach (var cube in FindObjectsOfType<Cube>())
+        {
+            cube.OnClickSpawning -= CreateCubes;
+        }
     }
 
-    private int GetRandomCubes()
+    private void CreateCubes()
     {
-        int min = 2;
-        int max = 7;
-        return UnityEngine.Random.Range(min, max);
-    }
-
-    private void SpawnCubes()
-    {
-        for (int i = 0; i < GetRandomCubes(); i++)
-            Instantiate(gameObject, gameObject.transform.localPosition, Quaternion.identity);
+        for (int i = 0; i < Random.Range(2, 6); i++)
+        {
+            GameObject newCube = Instantiate(_cubePrefab, _cubePrefab.transform.position, Quaternion.identity);
+            newCube.transform.localScale *= 0.5f; 
+            newCube.GetComponent<Renderer>().material.color = new Color(Random.value, Random.value, Random.value); 
+        }
     }
 }
