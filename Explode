@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public class Explode : MonoBehaviour
+{
+    [SerializeField] private float _explosionForce = 500f;
+    private Rigidbody rb;
+    private List<Cube> _cubeList = new List<Cube>();
+    private GameObject _cubePrefab;
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    private void OnEnable()
+    {
+        foreach (var cube in FindObjectsOfType<Cube>())
+        {
+            cube.OnClickExploding += Explosion;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var cube in FindObjectsOfType<Cube>())
+        {
+            cube.OnClickExploding -= Explosion;
+        }
+    }
+
+    private void Explosion()
+    {
+        Vector3 explosionCenter = transform.position;
+
+        foreach (var cube in FindObjectsOfType<Cube>())
+        {
+            _cubeList.Add(cube);
+        }
+
+        for (int i = 0; i < _cubeList.Count; i++)
+        {
+            Rigidbody rb = _cubeList[i].GetComponent<Rigidbody>();
+            Vector3 explosionDirection = _cubeList[i].transform.position - transform.position;
+            rb.AddForce(explosionDirection.normalized * _explosionForce, ForceMode.Impulse);
+        }
+    }
+}
