@@ -5,36 +5,45 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
-    private float _splitChance = 1f; // Начинаем с 100%
-    private float _splitChanceDivider = 2f;
-  
-    public event Action OnClickSpawning;
-    public event Action OnClickExploding;
+    [SerializeField] private float _explosionRadius;
+    [SerializeField] private float _explosionForce;
 
-    private void OnMouseDown()
+    static private float _splitChance = 10; // Уважаемый ментор, я помню, что статика это ужасно плохо, но я в упор не понимаю, почему у меня после первого деления переменная замирает в значении. Помогите..
+    private float _chanceDivider = 2; 
+    private CubeSpawner _cubeSpawner;
+
+    private void Update()
     {
-        if (CheckChances())
+        if (Input.GetMouseButtonDown(0))
         {
-            OnClickSpawning?.Invoke();
-        }
-        else
-        {
-            OnClickExploding?.Invoke();
-        }
+            _cubeSpawner = GetComponent<CubeSpawner>();
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-        Destroy(gameObject); 
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.transform == transform)
+                {
+                    if (_cubeSpawner != null)
+                    {
+                        if (GetSpawnChance())
+                        {
+                            _cubeSpawner.CreateCubes(transform.position);
+                            _splitChance /= _chanceDivider;
+                            Destroy(gameObject);
+                        }     
+                        
+                            Destroy(gameObject);
+                    }
+                }
+            }
+        }
     }
 
-    private bool CheckChances()
+    private bool GetSpawnChance()
     {
-        float checkNumber = UnityEngine.Random.Range(0f, 1f); 
-        bool isSplit = checkNumber < _splitChance;
+        int randomNumber = UnityEngine.Random.Range(1, 9);
 
-        if (isSplit)
-        {
-            _splitChance /= _splitChanceDivider; 
-        }
-
-        return isSplit;
+        return randomNumber <= _splitChance;
     }
 }
