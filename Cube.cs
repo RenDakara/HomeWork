@@ -3,20 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
+
 public class Cube : MonoBehaviour
 {
     [SerializeField] private float _explosionRadius;
     [SerializeField] private float _explosionForce;
 
-    static private float _splitChance = 10; // Уважаемый ментор, я помню, что статика это ужасно плохо, но я в упор не понимаю, почему у меня после первого деления переменная замирает в значении. Помогите..
-    private float _chanceDivider = 2; 
-    private CubeSpawner _cubeSpawner;
+    public float _splitChance = 10f;
+
+    public event Action<Cube> OnCubeClicked;
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            _cubeSpawner = GetComponent<CubeSpawner>();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
@@ -24,17 +25,12 @@ public class Cube : MonoBehaviour
             {
                 if (hit.transform == transform)
                 {
-                    if (_cubeSpawner != null)
+                    if (GetSpawnChance())
                     {
-                        if (GetSpawnChance())
-                        {
-                            _cubeSpawner.CreateCubes(transform.position);
-                            _splitChance /= _chanceDivider;
-                            Destroy(gameObject);
-                        }     
-                        
-                            Destroy(gameObject);
+                        OnCubeClicked?.Invoke(this);
                     }
+
+                    Destroy(gameObject);
                 }
             }
         }
@@ -45,5 +41,11 @@ public class Cube : MonoBehaviour
         int randomNumber = UnityEngine.Random.Range(1, 9);
 
         return randomNumber <= _splitChance;
+    }
+
+    public void ChangeCubeColor()
+    {
+        Renderer rd = GetComponent<Renderer>();
+        rd.material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
     }
 }
