@@ -1,30 +1,48 @@
+using System.Collections.Generic;
 using UnityEngine;
+
 
 public class CubeSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject _cubePrefab;
+    [SerializeField] private List<Cube> _cubes;
+    private int _divider = 2;
+    private int _minCubes = 2;
+    private int _maxCubes = 7;
 
-    private Renderer _renderer;
-    private int _scaleDivider = 2;
-
-    private void Start()
+    private void OnEnable()
     {
-        _renderer = GetComponent<Renderer>();
+        foreach (var cube in _cubes)
+        {
+            cube.OnCubeClicked += HandleCubeClicked;
+        }
     }
 
-    public void CreateCubes(Vector3 position)
+    private void OnDisable()
     {
-        int minCubes = 2;
-        int maxCubes = 7;
-        int countCubes = Random.Range(minCubes, maxCubes);
-        Vector3 originalScale = transform.localScale;
-        Vector3 newScale = originalScale / _scaleDivider;
-
-        for (int i = 0; i < countCubes; i++)
+        foreach (var cube in _cubes)
         {
-            Vector3 spawnPosition = new Vector3(position.x, position.y, position.z);
-            GameObject newCube = Instantiate(_cubePrefab, spawnPosition, Quaternion.identity);
-            newCube.transform.localScale = newScale;
+            cube.OnCubeClicked -= HandleCubeClicked;
         }
+    }
+
+    private void HandleCubeClicked(Cube cube)
+    {
+        CreateCubes(cube);
+    }
+
+    private void CreateCubes(Cube cube)
+    {
+        int randomNumber = Random.Range(_minCubes, _maxCubes);
+        cube.ChangeCubeColor();
+        cube.transform.localScale /= _divider;
+
+        for (int i = 0; i < randomNumber; i++)
+        {
+            cube = Instantiate(cube, cube.transform.localPosition, Quaternion.identity);
+            cube.OnCubeClicked += HandleCubeClicked;
+        }
+
+        cube._splitChance /= _divider;
+        cube.OnCubeClicked -= HandleCubeClicked;
     }
 }
