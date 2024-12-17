@@ -4,48 +4,50 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(Raycast))]
+[RequireComponent (typeof(Rigidbody))]
 
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private float _explosionRadius;
-    [SerializeField] private float _explosionForce;
+    private Renderer _renderer;
+    private Raycast _raycast;
 
     public float _splitChance = 10f;
+    public Rigidbody Rigidbody { get; private set; }
 
     public event Action<Cube> OnCubeClicked;
 
+    private void Awake()
+    {
+        _renderer = GetComponent<Renderer>();
+        _raycast = GetComponent<Raycast>();
+        Rigidbody = GetComponent<Rigidbody>();
+    }
+
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (_raycast.CheckHit())
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
+            if (GetSpawnChance())
             {
-                if (hit.transform == transform)
-                {
-                    if (GetSpawnChance())
-                    {
-                        OnCubeClicked?.Invoke(this);
-                    }
-
-                    Destroy(gameObject);
-                }
+                OnCubeClicked?.Invoke(this);
             }
+
+            Destroy(gameObject);
         }
     }
 
     private bool GetSpawnChance()
     {
-        int randomNumber = UnityEngine.Random.Range(1, 9);
+        int minNumber = 1;
+        int maxNumber = 9;
+        int randomNumber = UnityEngine.Random.Range(minNumber, maxNumber);
 
         return randomNumber <= _splitChance;
     }
 
     public void ChangeCubeColor()
     {
-        Renderer rd = GetComponent<Renderer>();
-        rd.material.color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+        _renderer.material.color = UnityEngine.Random.ColorHSV();
     }
 }
