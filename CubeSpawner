@@ -6,7 +6,7 @@ using UnityEngine;
 public class CubeSpawner : MonoBehaviour
 {
     [SerializeField] private List<Cube> _cubes;
-    private Explode _explode;
+    private Explosion _explosion;
     private int _divider = 2;
     private int _minCubes = 2;
     private int _maxCubes = 7;
@@ -52,7 +52,7 @@ public class CubeSpawner : MonoBehaviour
             cube.OnCubeClicked += HandleCubeClicked;
         }
 
-        _explode.Exploder(cubesToExplode, cube.transform.localPosition);
+        _explode.Explode(cubesToExplode, cube.transform.localPosition);
         cube._splitChance /= _divider;
         cube.OnCubeClicked -= HandleCubeClicked;
     }
