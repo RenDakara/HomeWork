@@ -1,0 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public class Explode : MonoBehaviour
+{
+    [SerializeField] private float _explosionRadius = 50f;
+    [SerializeField] private float _force = 1000;
+
+    public void Exploder(List<Cube> cubeList, Vector3 center)
+    {
+        foreach (Cube cube in cubeList)
+        {
+            cube.Rigidbody.AddExplosionForce(_force, center, _explosionRadius);
+        }
+    }
+}
