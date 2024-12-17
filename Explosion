@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Explode : MonoBehaviour
+public class Explosion : MonoBehaviour
 {
     [SerializeField] private float _explosionRadius = 50f;
     [SerializeField] private float _force = 1000;
 
-    public void Exploder(List<Cube> cubeList, Vector3 center)
+    public void Explode(List<Cube> cubeList, Vector3 center)
     {
         foreach (Cube cube in cubeList)
         {
