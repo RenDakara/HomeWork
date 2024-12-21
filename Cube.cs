@@ -2,53 +2,54 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
-[RequireComponent(typeof(Raycast))]
-[RequireComponent (typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Explosion))]
 
 public class Cube : MonoBehaviour
 {
     private Renderer _renderer;
-    private Raycast _raycast;
     private Explosion _explosion;
+    private float _chancesDivider = 2;
+    private float _splitChance = 10f;
 
-    public float _splitChance = 5f;
     public Rigidbody Rigidbody { get; private set; }
 
-    public event Action<Cube> OnCubeClicked;
+    public event Action<Cube> Clicked;
+
+    private void OnMouseDown()
+    {
+        if (GetSpawnChance())
+        {
+            Clicked?.Invoke(this);
+            DecreaseChances();
+        }
+        else
+        {
+            _explosion.ExplodeAll();
+        }
+
+        Destroy(gameObject);
+    }
 
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
-        _raycast = GetComponent<Raycast>();
         Rigidbody = GetComponent<Rigidbody>();
         _explosion = GetComponent<Explosion>();
     }
 
-    private void Update()
-    {
-        if (_raycast.CheckHit())
-        {
-            if (GetSpawnChance())
-            {
-                OnCubeClicked?.Invoke(this);
-            }
-            else
-            {
-                _explosion.Explode();
-            }
-
-            Destroy(gameObject);
-        }
-    }
-
     private bool GetSpawnChance()
     {
-        int minNumber = 1;
-        int maxNumber = 9;
-        int randomNumber = UnityEngine.Random.Range(minNumber, maxNumber);
+        float minNumber = 5f;
+        float maxNumber = 11f;
+        float randomNumber = UnityEngine.Random.Range(minNumber, maxNumber);
 
         return randomNumber <= _splitChance;
+    }
+
+    private void DecreaseChances()
+    {
+        _splitChance /= _chancesDivider;
     }
 
     public void ChangeCubeColor()
