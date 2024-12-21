@@ -1,18 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
 [RequireComponent(typeof(Raycast))]
 [RequireComponent (typeof(Rigidbody))]
+[RequireComponent(typeof(Explosion))]
 
 public class Cube : MonoBehaviour
 {
     private Renderer _renderer;
     private Raycast _raycast;
+    private Explosion _explosion;
 
-    public float _splitChance = 10f;
+    public float _splitChance = 5f;
     public Rigidbody Rigidbody { get; private set; }
 
     public event Action<Cube> OnCubeClicked;
@@ -22,6 +22,7 @@ public class Cube : MonoBehaviour
         _renderer = GetComponent<Renderer>();
         _raycast = GetComponent<Raycast>();
         Rigidbody = GetComponent<Rigidbody>();
+        _explosion = GetComponent<Explosion>();
     }
 
     private void Update()
@@ -31,6 +32,10 @@ public class Cube : MonoBehaviour
             if (GetSpawnChance())
             {
                 OnCubeClicked?.Invoke(this);
+            }
+            else
+            {
+                _explosion.Explode();
             }
 
             Destroy(gameObject);
@@ -49,5 +54,10 @@ public class Cube : MonoBehaviour
     public void ChangeCubeColor()
     {
         _renderer.material.color = UnityEngine.Random.ColorHSV();
+    }
+
+    public Vector3 GetSize()
+    {
+        return transform.localScale;
     }
 }
