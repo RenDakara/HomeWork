@@ -1,0 +1,14 @@
+public class Painter : MonoBehaviour
+{
+    private Renderer _renderer;
+
+    private void Awake()
+    {
+        _renderer = GetComponent<Renderer>();
+    }
+
+    public void ChangeColor()
+    {
+        _renderer.material.color = new Color(Random.value, Random.value, Random.value);
+    }
+}
