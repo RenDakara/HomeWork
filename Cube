@@ -1,0 +1,39 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Cube : MonoBehaviour
+{
+    private Painter _painter;
+    private WaitForSeconds _waitForSeconds;
+    private float minNumber = 2f;
+    private float maxNumber = 6f;
+    private List<Platform> _platforms = new List<Platform>();
+
+    private void Awake()
+    {
+        _painter = GetComponent<Painter>();
+        float delay = Random.Range(minNumber, maxNumber);
+        _waitForSeconds = new WaitForSeconds(delay);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Platform platform))
+        {
+            if (!_platforms.Contains(platform))
+            {
+                _platforms.Add(platform);
+                _painter.ChangeColor();
+                StartCoroutine(DestroyAfterDelay());
+            }
+        }
+    }
+
+    private IEnumerator DestroyAfterDelay()
+    {
+        yield return _waitForSeconds;
+
+        Destroy(gameObject);
+    }
+}
