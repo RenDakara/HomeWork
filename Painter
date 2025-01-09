@@ -13,4 +13,9 @@ public class Painter : MonoBehaviour
     {
         _renderer.material.color = new Color(Random.value, Random.value, Random.value);
     }
+
+    public void ResetColor()
+    {
+        _renderer.material.color = Color.white;
+    }
 }
