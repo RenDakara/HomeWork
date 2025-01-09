@@ -3,45 +3,44 @@ using UnityEngine.Pool;
 
 public class CubeSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject _cubePrefab;
-    [SerializeField] GameObject _startPoint;
+    [SerializeField] private Cube _cube;
+    [SerializeField] private GameObject _startPoint;
     [SerializeField] private float _repeatRate = 1f;
     [SerializeField] private int _poolCapacity = 5;
     [SerializeField] private int _poolMaxSize = 5;
+    [SerializeField] private bool _usePool;
 
-    private ObjectPool<GameObject> _pool;
-
-    private void Awake()
-    {
-        _pool = new ObjectPool<GameObject>(
-            createFunc: () => Instantiate(_cubePrefab),
-            actionOnGet: (obj) => ActionOnGet(obj),
-            actionOnRelease: (obj) => obj.SetActive(false),
-            actionOnDestroy: (obj) => Destroy(obj),
-            collectionCheck: true,
-            defaultCapacity: _poolCapacity,
-            maxSize: _poolMaxSize);
-    }
-
-    private void ActionOnGet(GameObject obj)
-    {
-        obj.transform.position = _startPoint.transform.position;
-        obj.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        obj.SetActive(true);
-    }
+    private ObjectPool<Cube> _pool;
 
     private void Start()
     {
-        InvokeRepeating(nameof(GetSphere), 0.0f, _repeatRate);
+        _pool = new ObjectPool<Cube>(() =>
+        {
+            return Instantiate(_cube);
+        }, cube =>
+        {
+            cube.gameObject.SetActive(true);
+        }, cube =>
+        {
+            cube.gameObject.SetActive(false);
+        }, cube =>
+        {
+            Destroy(cube.gameObject);
+        }, false, _poolCapacity, _poolMaxSize);
+
+        InvokeRepeating(nameof(Spawn), 0.0f, _repeatRate);
     }
 
-    private void GetSphere()
+    private void Spawn()
     {
-        _pool.Get();
+        var cube = _usePool ? _pool.Get() : Instantiate(_cube);
+        cube.transform.position = _startPoint.transform.position;
+        cube.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        cube.Initialize(this);
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void KillShape(Cube cube)
     {
-        _pool.Release(other.gameObject);
+        _pool.Release(cube);
     }
 }
