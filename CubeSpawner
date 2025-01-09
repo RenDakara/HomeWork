@@ -22,6 +22,7 @@ public class CubeSpawner : MonoBehaviour
             cube.gameObject.SetActive(true);
         }, cube =>
         {
+            cube.ResetColor();
             cube.gameObject.SetActive(false);
         }, cube =>
         {
@@ -33,8 +34,11 @@ public class CubeSpawner : MonoBehaviour
 
     private void Spawn()
     {
-        var cube = _usePool ? _pool.Get() : Instantiate(_cube);
-        cube.transform.position = _startPoint.transform.position;
+        Cube cube = _usePool ? _pool.Get() : Instantiate(_cube);
+        float randomX = 36f;
+        float randomY = 15f;
+        float randomZ = Random.Range(-15f, 5f);
+        cube.transform.position = new Vector3(randomX, randomY, randomZ);
         cube.GetComponent<Rigidbody>().velocity = Vector3.zero;
         cube.Initialize(this);
     }
