@@ -6,14 +6,15 @@ public class Cube : MonoBehaviour
 {
     private Painter _painter;
     private WaitForSeconds _waitForSeconds;
-    private float minNumber = 2f;
-    private float maxNumber = 6f;
+    private float _minNumber = 2f;
+    private float _maxNumber = 6f;
     private List<Platform> _platforms = new List<Platform>();
+    private CubeSpawner _cubeSpawner;
 
     private void Awake()
     {
         _painter = GetComponent<Painter>();
-        float delay = Random.Range(minNumber, maxNumber);
+        float delay = UnityEngine.Random.Range(_minNumber, _maxNumber);
         _waitForSeconds = new WaitForSeconds(delay);
     }
 
@@ -21,7 +22,7 @@ public class Cube : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent(out Platform platform))
         {
-            if (!_platforms.Contains(platform))
+            if (_platforms.Contains(platform) == false)
             {
                 _platforms.Add(platform);
                 _painter.ChangeColor();
@@ -33,7 +34,12 @@ public class Cube : MonoBehaviour
     private IEnumerator DestroyAfterDelay()
     {
         yield return _waitForSeconds;
+        _cubeSpawner.KillShape(this);
 
-        Destroy(gameObject);
+    }
+
+    public void Initialize(CubeSpawner cubeSpawner)
+    {
+        _cubeSpawner = cubeSpawner;
     }
 }
