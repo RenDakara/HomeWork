@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemy;
+    [SerializeField] private Enemy _enemy;
     private float _spawnTime = 2f;
     private float _time = 0f;
     private float _spawnRadius = 5f;
-    private float _spawnInterval = 2f;
 
     private void Start()
     {
@@ -21,10 +18,9 @@ public class EnemySpawner : MonoBehaviour
         float randomZ = Random.Range(-_spawnRadius, _spawnRadius);
 
         Vector3 spawnPosition = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
-        GameObject enemy = Instantiate(_enemy, spawnPosition, Quaternion.identity);   
+        _enemy = Instantiate(_enemy, spawnPosition, Quaternion.identity);   
         
         Vector3 movementDirection = (transform.position - spawnPosition).normalized;
-        enemy.GetComponent<EnemyMover>().SetMovementDirection(movementDirection);
+        _enemy.GetComponent<EnemyMover>().SetMovementDirection(movementDirection);
     }
-
 }
