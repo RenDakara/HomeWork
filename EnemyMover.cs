@@ -1,7 +1,4 @@
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
-
 public class EnemyMover : MonoBehaviour
 {
     [SerializeField] private float _movementSpeed;
@@ -23,12 +20,6 @@ public class EnemyMover : MonoBehaviour
             Vector3 position = transform.position;
             position.y = 0;
             transform.position = position;
-
-            if (Vector3.Distance(transform.position, targetPosition) < _arrivalDistance)
-            {
-                Destroy(gameObject); // ”ничтожение врага, когда он достиг цели
-            }
         }
-
     }
 }
