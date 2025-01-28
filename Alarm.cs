@@ -7,54 +7,49 @@ public class Alarm : MonoBehaviour
     [SerializeField] private float _maxVolume = 1f;
     [SerializeField] private float _increaseDuration = 2f;
     [SerializeField] private float _decreaseDuration = 2f;
+    private Coroutine _coroutine;
 
-    private void OnTriggerEnter(Collider other)
+    public void TriggerAlarm()
     {
-        if (other.TryGetComponent(out Player player))
-            StartCoroutine(IncreaseVolume());
+        StartChangingVolume(_maxVolume, _increaseDuration);
     }
 
-    private void OnTriggerExit(Collider other)
+    public void StopAlarm()
     {
-        if (other.TryGetComponent(out Player player))
-            StartCoroutine(DecreaseVolume());
+        StartChangingVolume(0, _decreaseDuration);
     }
 
-    private IEnumerator IncreaseVolume()
+    private void StartChangingVolume(float targetVolume, float duration)
     {
-        _alarmSound.volume = 0;
-        _alarmSound.Play();
+        if (_coroutine != null)
+        {
+            StopCoroutine(_coroutine);
+        }
+        _coroutine = StartCoroutine(ChangeVolume(targetVolume, duration));
+    }
 
+    private IEnumerator ChangeVolume(float targetVolume, float duration)
+    {
         float elapsedTime = 0f;
         float initialVolume = _alarmSound.volume;
-        float targetVolume = 1f;
 
-        while (elapsedTime < _increaseDuration)
+        if (targetVolume > 0)
         {
-            float maxVolumeChange = (targetVolume - initialVolume) * (Time.deltaTime / _increaseDuration);
+            _alarmSound.volume = 0;
+            _alarmSound.Play();
+        }
+
+        while (elapsedTime < duration)
+        {
+            float maxVolumeChange = Mathf.Abs(targetVolume - initialVolume) * (Time.deltaTime / _increaseDuration);
             _alarmSound.volume = Mathf.MoveTowards(_alarmSound.volume, targetVolume, maxVolumeChange);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        _alarmSound.volume = _maxVolume;
-    }
+        _alarmSound.volume = targetVolume;
 
-    private IEnumerator DecreaseVolume()
-    {
-        float elapsedTime = 0f;
-        float initialVolume = _alarmSound.volume;
-        float targetVolume = 0f;
-
-        while (elapsedTime < _decreaseDuration)
-        {
-            float maxVolumeChange = (initialVolume - targetVolume) * (Time.deltaTime / _decreaseDuration);
-            _alarmSound.volume = Mathf.MoveTowards(_alarmSound.volume, targetVolume, maxVolumeChange);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        _alarmSound.volume = 0;
-        _alarmSound.Stop();
+        if (targetVolume == 0)
+            _alarmSound.Stop();
     }
 }
