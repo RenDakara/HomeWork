@@ -1,16 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _speed = 2f;
-    [SerializeField] private Transform _firstPoint;
-    [SerializeField] private Transform _secondPoint;
+    [SerializeField] private Transform[] _wayPoints;
 
     private bool _movingRight = true;
-    private Rigidbody2D _rb;
+    private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
 
@@ -18,7 +14,7 @@ public class Enemy : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _rb = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -28,13 +24,13 @@ public class Enemy : MonoBehaviour
 
     private void Patrol()
     {
-        _animator.SetBool("IsRunning", true);
+        _animator.SetBool(PlayerAnimatorData.Params.IsRunning, true);
 
         if (_movingRight)
         {
-            _rb.velocity = new Vector2(_speed, _rb.velocity.y);
+            _rigidbody.velocity = new Vector2(_speed, _rigidbody.velocity.y);
 
-            if(transform.position.x >= _secondPoint.position.x)
+            if(transform.position.x >= _wayPoints[1].position.x)
             {
                 _movingRight = false;
                 _spriteRenderer.flipX = true;
@@ -42,9 +38,9 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            _rb.velocity = new Vector2(-_speed, _rb.velocity.y);
+            _rigidbody.velocity = new Vector2(-_speed, _rigidbody.velocity.y);
             
-            if(transform.position.x <= _firstPoint.position.x)
+            if(transform.position.x <= _wayPoints[0].position.x)
             {
                 _movingRight = true;
                 _spriteRenderer.flipX = false;
