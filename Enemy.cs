@@ -5,7 +5,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _speed = 2f;
     [SerializeField] private Transform[] _wayPoints;
 
-    private bool _movingRight = true;
+    private bool _isMovingRight = true;
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
@@ -26,14 +26,14 @@ public class Enemy : MonoBehaviour
     {
         _animator.SetBool(PlayerAnimatorData.Params.IsRunning, true);
 
-        if (_movingRight)
+        if (_isMovingRight)
         {
             _rigidbody.velocity = new Vector2(_speed, _rigidbody.velocity.y);
 
             if(transform.position.x >= _wayPoints[1].position.x)
             {
-                _movingRight = false;
-                _spriteRenderer.flipX = true;
+                _isMovingRight = false;
+                transform.rotation = Quaternion.Euler(0, 180, 0);
             }
         }
         else
@@ -42,8 +42,8 @@ public class Enemy : MonoBehaviour
             
             if(transform.position.x <= _wayPoints[0].position.x)
             {
-                _movingRight = true;
-                _spriteRenderer.flipX = false;
+                _isMovingRight = true;
+                transform.rotation = Quaternion.Euler(0, 0, 0);
             }
         }
     }
