@@ -10,15 +10,17 @@ public class Movement : MonoBehaviour
     private SpriteRenderer _renderer;
     private Rigidbody2D _rigidbody;
     private bool _isGrounded;
+    private InputService _inputService;
 
     private void Awake()
     {
+        _inputService = GetComponent<InputService>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _renderer = GetComponent<SpriteRenderer>();
     }
     public void Run()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
+        float horizontalInput = _inputService.GetHorizontalInput();
         Vector3 dir = transform.right * horizontalInput;
         transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, _speed * Time.deltaTime);
         _renderer.flipX = dir.x < 0.0f;
@@ -28,7 +30,7 @@ public class Movement : MonoBehaviour
     {
         _isGrounded = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, _layerMask);
 
-        if (Input.GetButtonDown("Jump") && _isGrounded)
+        if (_inputService.GetJumpInput() && _isGrounded)
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _jumpForce);
     }
 }
