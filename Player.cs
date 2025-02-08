@@ -5,9 +5,11 @@ public class Player : MonoBehaviour
     private bool _isRunning;
     private Animator _animator;
     private Movement _movement;
+    private CoinCollector _coinsCollector;
 
     private void Awake()
     {
+        _coinsCollector = GetComponent<CoinCollector>();
         _animator = GetComponent<Animator>();
         _movement = GetComponent<Movement>();
     }
@@ -24,15 +26,12 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out Coin coin))
-        {
-            Destroy(coin.gameObject);
-        }
+        _coinsCollector.Collect(collision);
     }
 
     private void Move()
     {
-        float moveInput = Input.GetAxis("Horizontal");
+        float moveInput = Input.GetAxis(InputAxis.Horizontal);
 
         if (moveInput != 0)
         {
